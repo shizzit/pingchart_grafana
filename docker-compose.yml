@@ -1,0 +1,40 @@
+version: "3"
+services:
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    restart: always
+    ports:
+      - 3000:3000
+    volumes:
+      - grafana-volume:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=secret
+      - GF_SECURITY_ADMIN_PASSWORD=secret
+
+  influxdb:
+    image: influxdb
+    container_name: influxdb
+    restart: always
+    ports:
+      - 8086:8086
+    volumes:
+      - influxdb-volume:/var/lib/influxdb
+    environment:
+      - INFLUXDB_ADMIN_USER=secret
+      - INFLUXDB_ADMIN_PASSWORD=secret
+      - INFLUXDB_DB=db
+      - INFLUXDB_USER=grafana
+      - INFLUXDB_USER_PASSWORD=grafana
+
+  ping:
+    image: ping
+    build: .
+    container_name: ping
+    restart: always
+    depends_on:
+     - influxdb
+
+volumes:
+  grafana-volume:
+  influxdb-volume:
